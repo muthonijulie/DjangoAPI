@@ -11,7 +11,6 @@ class TodoSerializers(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'id', 'title','highlight', 
                    'content', 'created_at','task_by']
 
-
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     todo = serializers.HyperlinkedRelatedField(many=True, 
     view_name='todo-detail', read_only=True)

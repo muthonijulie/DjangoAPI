@@ -2,10 +2,12 @@ from todoapp.models import Todo
 from todoapp.serializers import TodoSerializers,UserSerializer
 from rest_framework import generics
 from rest_framework.decorators import api_view
+from todoapp.permissions import IsOwnerOrReadOnly
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import renderers
 from django.contrib.auth.models import User
+from rest_framework import permissions
 
 
 
@@ -29,20 +31,23 @@ class TodoHighlight(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         todo = self.get_object()
         return Response(todo.highlighted)
-
+      
 class TodoList(generics.ListCreateAPIView):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializers
-
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        # Set the task_by field to the current logged-in user
+        
         serializer.save(task_by=self.request.user)
+        
 
 
 class TodoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializers
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly,
+                      IsOwnerOrReadOnly]
 
 # from rest_framework import status
 # from rest_framework.response import Response
